@@ -18,11 +18,15 @@ class StateStore:
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
     def _persist(self) -> None:
-        self._ensure_dir()
-        self.file_path.write_text(
-            json.dumps(self._state, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+        try:
+            self._ensure_dir()
+            self.file_path.write_text(
+                json.dumps(self._state, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        except Exception:
+            # In serverless/read-only environments keep in-memory state only.
+            pass
 
     def _load(self) -> None:
         with self._lock:
@@ -37,11 +41,7 @@ class StateStore:
                     self._state = parsed
             except Exception:
                 self._state = {"users": {}}
-                try:
-                    self._persist()
-                except Exception:
-                    # Keep in-memory state when filesystem is not writable (e.g. serverless).
-                    pass
+                self._persist()
 
     def get_user(self, phone: str) -> dict[str, Any] | None:
         return self._state["users"].get(phone)
