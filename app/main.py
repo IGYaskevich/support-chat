@@ -130,8 +130,12 @@ def _validate_twilio_signature(request: Request, fields: dict[str, str]) -> bool
 
 
 def _validate_twilio_account_sid(fields: dict[str, str]) -> bool:
+    if not config.twilio_validate_signature:
+        return True
+
     if not config.twilio_account_sid:
         return True
+
     return fields.get("AccountSid", "").strip() == config.twilio_account_sid
 
 

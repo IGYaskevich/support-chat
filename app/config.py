@@ -46,6 +46,8 @@ class AppConfig:
 
 
 def load_config() -> AppConfig:
+    default_state_file = "/tmp/state.json" if os.getenv("VERCEL") else "./data/state.json"
+
     config = AppConfig(
         port=_as_int(os.getenv("PORT"), 8080),
         public_base_url=os.getenv("PUBLIC_BASE_URL", "").strip(),
@@ -57,7 +59,7 @@ def load_config() -> AppConfig:
         twilio_account_sid=os.getenv("TWILIO_ACCOUNT_SID", "").strip(),
         twilio_auth_token=os.getenv("TWILIO_AUTH_TOKEN", "").strip(),
         twilio_validate_signature=_as_bool(os.getenv("TWILIO_VALIDATE_SIGNATURE"), True),
-        state_file=Path(os.getenv("STATE_FILE", "./data/state.json")).resolve(),
+        state_file=Path(os.getenv("STATE_FILE", default_state_file)).resolve(),
         max_tool_iterations=_as_int(os.getenv("MAX_TOOL_ITERATIONS"), 3),
     )
 

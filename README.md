@@ -55,6 +55,8 @@ Temporary local mode:
 TWILIO_VALIDATE_SIGNATURE=false
 ```
 
+When signature validation is disabled, `AccountSid` check is also skipped to simplify local smoke testing.
+
 Test webhook:
 
 ```bash
@@ -74,3 +76,24 @@ This repo includes `render.yaml`.
 4. Configure Twilio webhook URL:
 
 `https://<your-render-domain>/webhooks/whatsapp`
+
+## Vercel deploy
+
+This repository includes `vercel.json` and `api/index.py` as a FastAPI entrypoint for Vercel.
+
+Set required environment variables in Vercel Project Settings:
+
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL` (optional, default is `gpt-4o-mini`)
+- `FAQ_VECTOR_STORE_ID` (optional; without it bot replies with operator review fallback)
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN` (required when `TWILIO_VALIDATE_SIGNATURE=true`)
+- `TWILIO_VALIDATE_SIGNATURE=true`
+- `PUBLIC_BASE_URL=https://<your-vercel-domain>`
+- `STATE_FILE=/tmp/state.json`
+
+Then verify:
+
+```bash
+curl -i https://<your-vercel-domain>/health
+```

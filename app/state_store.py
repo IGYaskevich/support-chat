@@ -37,7 +37,11 @@ class StateStore:
                     self._state = parsed
             except Exception:
                 self._state = {"users": {}}
-                self._persist()
+                try:
+                    self._persist()
+                except Exception:
+                    # Keep in-memory state when filesystem is not writable (e.g. serverless).
+                    pass
 
     def get_user(self, phone: str) -> dict[str, Any] | None:
         return self._state["users"].get(phone)
